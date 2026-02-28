@@ -1,14 +1,18 @@
 pipeline {
-    agent none
+    agent {
+        label "controller"
+    }
+
+    parameters {
+        string(name: "TARGET_BRANCH", defaultValue: "main", description: "Which branch to checkout?")
+    }
 
     stages {
-        stage("Build agent image") {
-            agent {
-                label "controller"
-            }
+
+        stage("Build docker agent image") {
             steps {
                 script {
-                    docker.build("ansible-controller", "-f ./ansible.Dockerfile .")
+                    docker.build("ansible-controller:${params.TARGET_BRANCH}", "-f ./ansible.Dockerfile .")
                 }
             }
         }
@@ -16,7 +20,7 @@ pipeline {
         stage("Run ansible playbook") {
             agent {
                 docker {
-                    image "ansible-controller"
+                    image "ansible-controller:${params.TARGET_BRANCH}"
                 }
             }
             steps {
