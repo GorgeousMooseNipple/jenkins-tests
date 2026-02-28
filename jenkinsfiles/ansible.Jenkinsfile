@@ -25,7 +25,7 @@ pipeline {
                     sh "pwd"
                     sh "ls -lah"
 
-                    sh "ansible-playbook -i localhost, ./playbook.yml"
+                    sh "ansible-playbook -v ./ansible/playbook.yml"
                 }
             }
         }
