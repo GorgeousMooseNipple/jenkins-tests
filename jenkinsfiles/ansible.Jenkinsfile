@@ -4,11 +4,11 @@ pipeline {
     stages {
         stage("Build agent image") {
             agent {
-                label "master"
+                label "controller"
             }
             steps {
                 script {
-                    docker.build("ansible-controller", "./ansible.Dockerfile")
+                    docker.build("ansible-controller", "-f ./ansible.Dockerfile .")
                 }
             }
         }
@@ -17,16 +17,15 @@ pipeline {
             agent {
                 docker {
                     image "ansible-controller"
-                    args "--entrypoint /bin/bash"
                 }
-                steps {
-                    script {
-                        // Debug
-                        sh "pwd"
-                        sh "ls -lah"
+            }
+            steps {
+                script {
+                    // Debug
+                    sh "pwd"
+                    sh "ls -lah"
 
-                        sh "ansible-playbook -i localhost, ./playbook.yml"
-                    }
+                    sh "ansible-playbook -i localhost, ./playbook.yml"
                 }
             }
         }
