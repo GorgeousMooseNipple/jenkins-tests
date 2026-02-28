@@ -1,32 +1,17 @@
 pipeline {
-    agent none
+    agent {
+        label "controller"
+    }
 
     parameters {
         string(name: "TARGET_BRANCH", defaultValue: "main", description: "Which branch to checkout?")
     }
 
     stages {
-        stage("Checkout branch") {
-            agent {
-                label "controller"
-            }
-            steps {
-                script {
-                    checkout([$class: "GitSCM",
-                        branches: [[name: "*/${params.TARGET_BRANCH}"]]
-                    ])
-                    sh "git branch"
-                }
-            }
-        }
 
         stage("Build docker agent image") {
-            agent {
-                label "controller"
-            }
             steps {
                 script {
-                    sh "git branch"
                     docker.build("ansible-controller:${params.TARGET_BRANCH}", "-f ./ansible.Dockerfile .")
                 }
             }
@@ -41,7 +26,6 @@ pipeline {
             steps {
                 script {
                     // Debug
-                    sh "git branch"
                     sh "pwd"
                     sh "ls -lah"
 
