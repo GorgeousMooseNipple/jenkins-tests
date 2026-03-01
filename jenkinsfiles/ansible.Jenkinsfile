@@ -66,7 +66,7 @@ pipeline {
 
                     def command = "ansible-playbook -v"
                     if (params.EXTRA_VARS) {
-                        command = "${command} ${params.EXTRA_VARS}"
+                        command = "${command} --extra-vars ${params.EXTRA_VARS}"
                     }
                     command = "${command} ${params.PLAYBOOK}"
                     sh "${command}"
