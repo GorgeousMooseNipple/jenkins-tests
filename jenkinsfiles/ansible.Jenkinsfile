@@ -1,10 +1,19 @@
+/*
+* JOB PARAMETERS (Configured in Jenkins UI)
+* =========================================
+* This job relies on parameters configured in the Job configuration UI.
+* Do not modify "This project is parameterized" section without updating this comment.
+* 
+* 1. TARGET_BRANCH
+*    - Type: String
+*    - Required: yes
+*    - Default: "main"
+*    - Description: "Wich branch to checkout?"
+*/
+
 pipeline {
     agent {
         label "controller"
-    }
-
-    parameters {
-        string(name: "TARGET_BRANCH", defaultValue: "main", description: "Which branch to checkout?")
     }
 
     stages {
@@ -26,8 +35,10 @@ pipeline {
             steps {
                 script {
                     // Debug
-                    sh "pwd"
-                    sh "ls -lah"
+                    sh """
+                        pwd
+                        ls -lah
+                    """
 
                     sh "ansible-playbook -v ./ansible/playbook.yml"
                 }
