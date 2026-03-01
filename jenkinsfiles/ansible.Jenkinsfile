@@ -9,6 +9,17 @@
 *    - Required: yes
 *    - Default: "main"
 *    - Description: "Wich branch to checkout?"
+*
+* 2. PLAYBOOK
+*    - Type: String
+*    - Required: yes
+*    - Default: "./ansible/playbook.yml"
+*    - Description: "Path to ansible playbook inside repository. This playbook will be executed."
+*
+* 3. EXTRA_VARS
+*    - Type: String
+*    - Required: no
+*    - Description: "This string will be passed as `--extra-vars` argument to ansible playbook.
 */
 
 pipeline {
@@ -17,6 +28,19 @@ pipeline {
     }
 
     stages {
+
+        stage("Validate params") {
+            steps {
+                script {
+                    sh """
+                        set +x
+                        echo 'Checked out ${params.TARGET_BRANCH}'
+                        echo 'Will run playbook ${params.PLAYBOOK}'
+                        echo 'With extra vars: ${params.EXTRA_VARS}'
+                    """
+                }
+            }
+        }
 
         stage("Build docker agent image") {
             steps {
@@ -40,7 +64,12 @@ pipeline {
                         ls -lah
                     """
 
-                    sh "ansible-playbook -v ./ansible/playbook.yml"
+                    def command = "ansible-playbook -v"
+                    if (params.EXTRA_VARS) {
+                        command = "${command} ${params.EXTRA_VARS}"
+                    }
+                    command = "${command} ${params.PLAYBOOK}"
+                    sh "${command}"
                 }
             }
         }
