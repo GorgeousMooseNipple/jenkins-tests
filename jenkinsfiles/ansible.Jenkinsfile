@@ -38,6 +38,10 @@ pipeline {
                         echo 'Will run playbook ${params.PLAYBOOK}'
                         echo 'With extra vars: ${params.EXTRA_VARS}'
                     """
+                    if (params.EXTRA_VARS) {
+                        sh "echo 'Replacing all double quotes in EXTRA_VARS to single quotes'"
+                        env.EXTRA_VARS = env.EXTRA_VARS.replaceAll("\"", "'")
+                    }
                 }
             }
         }
@@ -65,8 +69,8 @@ pipeline {
                     """
 
                     def command = "ansible-playbook -v"
-                    if (params.EXTRA_VARS) {
-                        command = "${command} --extra-vars ${params.EXTRA_VARS}"
+                    if (env.EXTRA_VARS) {
+                        command = "${command} --extra-vars \"${env.EXTRA_VARS}\""
                     }
                     command = "${command} ${params.PLAYBOOK}"
                     sh "${command}"
